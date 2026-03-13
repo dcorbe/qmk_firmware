@@ -6,6 +6,11 @@
 
 #include "quantum.h"
 
+#ifdef POINTING_DEVICE_ENABLE
+#    include "navigator.h"
+#    include "navigator_trackball.h"
+#endif
+
 extern bool mcp23018_leds[];
 
 #define MCP23018_DEFAULT_ADDRESS 0b0100000
@@ -18,6 +23,14 @@ extern bool mcp23018_leds[];
 enum voyager_keycodes {
     TOGGLE_LAYER_COLOR = QK_KB,
     LED_LEVEL,
+#ifdef POINTING_DEVICE_ENABLE
+    NAVIGATOR_INC_CPI,
+    NAVIGATOR_DEC_CPI,
+    NAVIGATOR_TURBO,
+    NAVIGATOR_AIM,
+    DRAG_SCROLL,
+    TOGGLE_SCROLL,
+#endif
 };
 
 typedef union {

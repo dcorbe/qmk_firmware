@@ -4,6 +4,10 @@
 
 #include "voyager.h"
 
+#ifdef POINTING_DEVICE_ENABLE
+#    include "navigator.h"
+#endif
+
 keyboard_config_t keyboard_config;
 
 bool mcp23018_leds[2] = {0, 0};
@@ -221,6 +225,13 @@ bool led_update_kb(led_t led_state) {
 }
 #endif
 
+#ifdef POINTING_DEVICE_ENABLE
+report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
+    mouse_report = pointing_device_task_navigator(mouse_report);
+    return pointing_device_task_user(mouse_report);
+}
+#endif
+
 bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
     if (!process_record_user(keycode, record)) {
         return false;
@@ -262,6 +273,26 @@ bool process_record_kb(uint16_t keycode, keyrecord_t *record) {
                 }
             }
             return false;
+#endif
+#ifdef POINTING_DEVICE_ENABLE
+        case NAVIGATOR_INC_CPI:
+            if (record->event.pressed) pointing_device_set_cpi(1);
+            return false;
+        case NAVIGATOR_DEC_CPI:
+            if (record->event.pressed) pointing_device_set_cpi(0);
+            return false;
+        case NAVIGATOR_TURBO:
+            navigator_turbo = record->event.pressed;
+            break;
+        case NAVIGATOR_AIM:
+            navigator_aim = record->event.pressed;
+            break;
+        case DRAG_SCROLL:
+            set_scrolling = record->event.pressed;
+            break;
+        case TOGGLE_SCROLL:
+            if (record->event.pressed) set_scrolling = !set_scrolling;
+            break;
 #endif
     }
     return true;
