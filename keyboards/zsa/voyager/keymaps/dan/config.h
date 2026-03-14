@@ -13,6 +13,9 @@
 #define USB_SUSPEND_WAKEUP_DELAY 0
 #define LAYER_STATE_8BIT
 
+// Take control of status LEDs from voyager.c
+#define VOYAGER_USER_LEDS
+
 // Navigator trackball
 #define MOUSE_EXTENDED_REPORT
 #define POINTING_DEVICE_AUTO_MOUSE_ENABLE
