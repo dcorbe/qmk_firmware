@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
+#include "navigator.h"
 
 // Tap: KC_EQUAL, Hold: KC_ESCAPE (uses LT for tap/hold detection)
 #define DUAL_FUNC_0 LT(5, KC_5)
@@ -206,6 +207,11 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 // ---------------------------------------------------------------------------
 
 layer_state_t layer_state_set_user(layer_state_t state) {
+    // Clear scroll mode whenever the mouse layer deactivates, so the
+    // trackball x/y reports are non-zero and auto-mouse can re-engage.
+    if (!layer_state_cmp(state, _UTIL)) {
+        set_scrolling = false;
+    }
     // LED 4: layer 2 locked (TG, not automouse)
     STATUS_LED_4(get_auto_mouse_toggle());
     return state;
