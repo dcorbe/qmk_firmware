@@ -13,6 +13,10 @@ enum layers {
     _UTIL,
 };
 
+enum custom_keycodes {
+    EXIT_MOUSE = SAFE_RANGE,
+};
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT(
@@ -33,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     // Navigator automouse layer — activates automatically when trackball moves
     [_UTIL] = LAYOUT(
-        NAVIGATOR_DEC_CPI, NAVIGATOR_INC_CPI, _______,     _______,        _______,        TG(_UTIL),                                        _______,        _______,        _______,        _______,        _______,        _______,
+        NAVIGATOR_DEC_CPI, NAVIGATOR_INC_CPI, _______,     _______,        _______,        EXIT_MOUSE,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        _______,        MS_BTN3,     TOGGLE_SCROLL,                                  _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        MS_BTN2,        MS_BTN1,     DRAG_SCROLL,                                    _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
@@ -75,8 +79,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         }
         return false;
+
+    case EXIT_MOUSE:
+        // Turn off the mouse layer and start the re-activation delay so
+        // the trackball can re-engage it on the next deliberate movement.
+        auto_mouse_reset_trigger(record->event.pressed);
+        return false;
     }
     return true;
+}
+
+// Keep the mouse layer active as long as it is on — only EXIT_MOUSE turns it
+// off. Without this, the layer would time out after AUTO_MOUSE_TIME ms of
+// inactivity.
+bool auto_mouse_activation(report_mouse_t mouse_report) {
+    if (layer_state_is(_UTIL)) return true;
+    return abs(mouse_report.x) > AUTO_MOUSE_THRESHOLD ||
+           abs(mouse_report.y) > AUTO_MOUSE_THRESHOLD ||
+           mouse_report.buttons;
 }
 
 // ---------------------------------------------------------------------------
@@ -212,8 +232,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     if (!layer_state_cmp(state, _UTIL)) {
         set_scrolling = false;
     }
-    // LED 4: layer 2 locked (TG, not automouse)
-    STATUS_LED_4(get_auto_mouse_toggle());
+    // LED 4: mouse layer active
+    STATUS_LED_4(layer_state_cmp(state, _UTIL));
     return state;
 }
 
