@@ -11,6 +11,17 @@ enum layers {
     _BASE,
     _NAV,
     _UTIL,
+    _EVE,
+};
+
+enum td_keycodes {
+    TD_LAYER_TOGGLE,
+};
+
+// Single tap: TG(_UTIL) — mouse layer toggle
+// Double tap: TG(_EVE) — EVE Online layer toggle
+tap_dance_action_t tap_dance_actions[] = {
+    [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_DOUBLE(TG(_UTIL), TG(_EVE)),
 };
 
 enum custom_keycodes {
@@ -23,7 +34,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         DUAL_FUNC_0,    KC_1,           KC_2,           KC_3,           KC_4,           KC_5,                                           KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_MINUS,
         MO(_NAV),       KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,                                           KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,           KC_BSLS,
         KC_LEFT_GUI,    KC_A,           KC_S,           KC_D,           KC_F,           KC_G,                                           KC_H,           KC_J,           KC_K,           KC_L,           KC_SCLN,        KC_QUOTE,
-        KC_LEFT_CTRL,   KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,                                           KC_N,           KC_M,           KC_COMMA,       KC_DOT,         KC_SLASH,       TG(_UTIL),
+        KC_LEFT_CTRL,   KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,                                           KC_N,           KC_M,           KC_COMMA,       KC_DOT,         KC_SLASH,       TD(TD_LAYER_TOGGLE),
                                                         MT(MOD_LALT, KC_BSPC), MT(MOD_LSFT, KC_TAB),                                   MT(MOD_RSFT, KC_ENTER), MT(MOD_RALT, KC_SPACE)
     ),
 
@@ -32,6 +43,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        KC_LEFT,        KC_DOWN,        KC_UP,          KC_RIGHT,       _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
+                                                        _______,        _______,                                                        _______,        _______
+    ),
+
+    // EVE Online module layer
+    // QWERT = high slots 1-5 (F1-F5), ASDFG = mid slots 1-5 (F6-F10), ZXCVB = low slots 1-5 (F11-F15)
+    [_EVE] = LAYOUT(
+        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
+        _______,        KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          _______,        _______,        _______,        _______,        _______,        _______,
+        _______,        KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,                                         _______,        _______,        _______,        _______,        _______,        _______,
+        _______,        KC_F11,         KC_F12,         KC_F13,         KC_F14,         KC_F15,                                         _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
                                                         _______,        _______,                                                        _______,        _______
     ),
 
@@ -119,6 +140,8 @@ bool auto_mouse_activation(report_mouse_t mouse_report) {
 #define CLR_CYAN        0, 180, 180
 #define CLR_YELLOW      200, 180, 0
 #define CLR_PINK        255, 50, 130
+#define CLR_RED         200, 0, 0
+#define CLR_BLUE        0, 0, 200
 #define CLR_BLUE_PULSE  0, 0, 120
 #define CLR_OFF         0, 0, 0
 #define REACTIVE_FADE_MS 300
@@ -183,6 +206,18 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_range(26, 32, led_min, led_max, CLR_YELLOW);
         // Arrow keys: H J K L positions (38-41) — bright white
         set_range(38, 42, led_min, led_max, CLR_WHITE);
+        break;
+
+    case _EVE:
+        set_all(led_min, led_max, CLR_OFF);
+        // High slots: QWERT (left row 1, indices 7-11) — red
+        set_range(7, 12, led_min, led_max, CLR_RED);
+        // Mid slots: ASDFG (left row 2, indices 13-17) — blue
+        set_range(13, 18, led_min, led_max, CLR_BLUE);
+        // Low slots: ZXCVB (left row 3, indices 19-23) — orange
+        set_range(19, 24, led_min, led_max, CLR_ORANGE);
+        // Toggle key (bottom-right, index 49) — white
+        set_led(49, led_min, led_max, CLR_WHITE);
         break;
 
     case _UTIL:
