@@ -71,7 +71,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        MS_BTN2,        MS_BTN1,     DRAG_SCROLL,                                    MS_LEFT,        MS_DOWN,        MS_UP,          MS_RGHT,       _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
-                                                        MS_BTN3,        MS_BTN1,                                                        MS_BTN2,        TOGGLE_SCROLL
+                                                        TOGGLE_SCROLL,  MS_BTN1,                                                        MS_BTN2,        MS_BTN3
     ),
 };
 
@@ -241,13 +241,13 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_led(1, led_min, led_max, CLR_YELLOW);
         // TG lock key (5) — white
         set_led(5, led_min, led_max, CLR_WHITE);
-        // Mouse buttons on thumbs: BTN3 (24), BTN1 (25), BTN2 (50) — green
-        set_led(24, led_min, led_max, CLR_GREEN);
+        // Mouse buttons on thumbs: BTN1 (25), BTN2 (50), BTN3 (51) — green
         set_led(25, led_min, led_max, CLR_GREEN);
         set_led(50, led_min, led_max, CLR_GREEN);
-        // Scroll keys: DRAG_SCROLL (17) on grid, TOGGLE_SCROLL (51) on thumb — cyan
+        set_led(51, led_min, led_max, CLR_GREEN);
+        // Scroll keys: DRAG_SCROLL (17) on grid, TOGGLE_SCROLL (24) on thumb — cyan
         set_led(17, led_min, led_max, CLR_CYAN);
-        set_led(51, led_min, led_max, CLR_CYAN);
+        set_led(24, led_min, led_max, CLR_CYAN);
         // Mouse movement: HJKL (38-41) — pink
         set_range(38, 42, led_min, led_max, CLR_PINK);
         break;
