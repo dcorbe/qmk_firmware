@@ -47,12 +47,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     // EVE Online module layer
-    // QWERT = high slots 1-5 (F1-F5), ASDFG = mid slots 1-5 (F6-F10), ZXCVB = low slots 1-5 (F11-F15)
+    // QWERT = high slots 1-5 (F1-F5), ASDFG = mid slots 1-5 (Alt+F1-F5), ZXCVB = low slots 1-5 (Cmd+F1-F5)
     [_EVE] = LAYOUT(
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          _______,        _______,        _______,        _______,        _______,        _______,
-        _______,        KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,                                         _______,        _______,        _______,        _______,        _______,        _______,
-        _______,        KC_F11,         KC_F12,         KC_F13,         KC_F14,         KC_F15,                                         _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
+        _______,        LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    _______,        _______,        _______,        _______,        _______,        _______,
+        _______,        LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
                                                         _______,        _______,                                                        _______,        _______
     ),
 
