@@ -18,10 +18,19 @@ enum td_keycodes {
     TD_LAYER_TOGGLE,
 };
 
-// Single tap: TG(_UTIL) — mouse layer toggle
-// Double tap: TG(_EVE) — EVE Online layer toggle
+// Single tap: toggle mouse layer (_UTIL), double tap: toggle EVE layer (_EVE)
+// ACTION_TAP_DANCE_DOUBLE does not work with quantum keycodes like TG(); use
+// layer_invert() directly in a custom finished callback instead.
+static void td_layer_toggle_finished(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        layer_invert(_UTIL);
+    } else if (state->count == 2) {
+        layer_invert(_EVE);
+    }
+}
+
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_DOUBLE(TG(_UTIL), TG(_EVE)),
+    [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_layer_toggle_finished, NULL),
 };
 
 enum custom_keycodes {
