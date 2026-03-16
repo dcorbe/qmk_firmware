@@ -19,11 +19,16 @@ enum td_keycodes {
 };
 
 // Single tap: toggle mouse layer (_UTIL), double tap: toggle EVE layer (_EVE)
-// ACTION_TAP_DANCE_DOUBLE does not work with quantum keycodes like TG(); use
-// layer_invert() directly in a custom finished callback instead.
+// When exiting mouse mode, auto_mouse_reset_trigger() must be used instead of
+// layer_invert() so the trackball cooldown fires and the layer doesn't
+// immediately re-engage. layer_state_set_user() clears scroll state on deactivation.
 static void td_layer_toggle_finished(tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) {
-        layer_invert(_UTIL);
+        if (layer_state_is(_UTIL)) {
+            auto_mouse_reset_trigger(true);
+        } else {
+            layer_on(_UTIL);
+        }
     } else if (state->count == 2) {
         layer_invert(_EVE);
     }
@@ -70,7 +75,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         NAVIGATOR_DEC_CPI, NAVIGATOR_INC_CPI, _______,     _______,        _______,        EXIT_MOUSE,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        MS_BTN2,        MS_BTN1,        _______,                                        MS_LEFT,        MS_DOWN,        MS_UP,          MS_RGHT,       _______,        _______,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
+        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        EXIT_MOUSE,
                                                         TOGGLE_SCROLL,  MS_BTN1,                                                        MS_BTN2,        MS_BTN3
     ),
 };
