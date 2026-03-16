@@ -23,7 +23,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         DUAL_FUNC_0,    KC_1,           KC_2,           KC_3,           KC_4,           KC_5,                                           KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_MINUS,
         MO(_NAV),       KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,                                           KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,           KC_BSLS,
         KC_LEFT_GUI,    KC_A,           KC_S,           KC_D,           KC_F,           KC_G,                                           KC_H,           KC_J,           KC_K,           KC_L,           KC_SCLN,        KC_QUOTE,
-        KC_LEFT_CTRL,   KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,                                           KC_N,           KC_M,           KC_COMMA,       KC_DOT,         KC_SLASH,       QK_LEAD,
+        KC_LEFT_CTRL,   KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,                                           KC_N,           KC_M,           KC_COMMA,       KC_DOT,         KC_SLASH,       TG(_UTIL),
                                                         MT(MOD_LALT, KC_BSPC), MT(MOD_LSFT, KC_TAB),                                   MT(MOD_RSFT, KC_ENTER), MT(MOD_RALT, KC_SPACE)
     ),
 
@@ -39,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_UTIL] = LAYOUT(
         NAVIGATOR_DEC_CPI, NAVIGATOR_INC_CPI, _______,     _______,        _______,        EXIT_MOUSE,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        _______,        MS_BTN3,     TOGGLE_SCROLL,                                  _______,        _______,        _______,        _______,        _______,        _______,
-        _______,        _______,        _______,        MS_BTN2,        MS_BTN1,     DRAG_SCROLL,                                    _______,        _______,        _______,        _______,        _______,        _______,
+        _______,        _______,        _______,        MS_BTN2,        MS_BTN1,     DRAG_SCROLL,                                    MS_LEFT,        MS_DOWN,        MS_UP,          MS_RGHT,       _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
                                                         _______,        _______,                                                        _______,        _______
     ),
@@ -118,6 +118,7 @@ bool auto_mouse_activation(report_mouse_t mouse_report) {
 #define CLR_GREEN       0, 200, 0
 #define CLR_CYAN        0, 180, 180
 #define CLR_YELLOW      200, 180, 0
+#define CLR_PINK        255, 50, 130
 #define CLR_BLUE_PULSE  0, 0, 120
 #define CLR_OFF         0, 0, 0
 #define REACTIVE_FADE_MS 300
@@ -203,6 +204,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         // Scroll keys: TOGGLE_SCROLL (11), DRAG_SCROLL (17) — cyan
         set_led(11, led_min, led_max, CLR_CYAN);
         set_led(17, led_min, led_max, CLR_CYAN);
+        // Mouse movement: HJKL (38-41) — pink
+        set_range(38, 42, led_min, led_max, CLR_PINK);
         break;
     }
 

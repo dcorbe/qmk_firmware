@@ -16,6 +16,16 @@
 // Take control of status LEDs from voyager.c
 #define VOYAGER_USER_LEDS
 
+// Mousekeys
+#undef MOUSEKEY_DELAY
+#define MOUSEKEY_DELAY       50
+#undef MOUSEKEY_INTERVAL
+#define MOUSEKEY_INTERVAL    20
+#undef MOUSEKEY_MAX_SPEED
+#define MOUSEKEY_MAX_SPEED   6
+#undef MOUSEKEY_TIME_TO_MAX
+#define MOUSEKEY_TIME_TO_MAX 25
+
 // Navigator trackball
 #define MOUSE_EXTENDED_REPORT
 #define POINTING_DEVICE_AUTO_MOUSE_ENABLE
