@@ -67,7 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     // Navigator automouse layer — activates automatically when trackball moves
     [_UTIL] = LAYOUT(
-        NAVIGATOR_DEC_CPI, NAVIGATOR_INC_CPI, _______,     _______,        _______,        _______,                                           _______,        _______,        _______,        _______,        _______,        _______,
+        NAVIGATOR_DEC_CPI, NAVIGATOR_INC_CPI, _______,     _______,        _______,        EXIT_MOUSE,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        MS_BTN2,        MS_BTN1,        _______,                                        MS_LEFT,        MS_DOWN,        MS_UP,          MS_RGHT,       _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
@@ -239,6 +239,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         // CPI keys (0, 1) — yellow
         set_led(0, led_min, led_max, CLR_YELLOW);
         set_led(1, led_min, led_max, CLR_YELLOW);
+        // EXIT_MOUSE key (5) — white
+        set_led(5, led_min, led_max, CLR_WHITE);
 // Mouse buttons + scroll toggle on thumbs: (24) (25) (50) (51) — green
         set_led(24, led_min, led_max, CLR_GREEN);
         set_led(25, led_min, led_max, CLR_GREEN);
