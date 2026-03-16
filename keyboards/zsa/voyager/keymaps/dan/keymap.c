@@ -246,6 +246,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_led(51, led_min, led_max, CLR_GREEN);
         // Mouse movement: HJKL (38-41) — pink
         set_range(38, 42, led_min, led_max, CLR_PINK);
+        // Layer toggle key (49) — white
+        set_led(49, led_min, led_max, CLR_WHITE);
         break;
     }
 
