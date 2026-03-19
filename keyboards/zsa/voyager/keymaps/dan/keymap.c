@@ -65,7 +65,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_EVE] = LAYOUT(
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          _______,        _______,        _______,        _______,        _______,        _______,
-        _______,        LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    _______,        _______,        _______,        _______,        _______,        _______,
+        _______,        LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    LCTL(KC_LEFT),  LCTL(KC_DOWN),  LCTL(KC_UP),    LCTL(KC_RGHT),  _______,        _______,
         _______,        LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
                                                         _______,        _______,                                                        _______,        _______
     ),
@@ -230,6 +230,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_range(13, 18, led_min, led_max, CLR_BLUE);
         // Low slots: ZXCVB (left row 3, indices 19-23) — orange
         set_range(19, 24, led_min, led_max, CLR_ORANGE);
+        // Workspace switch: HJKL (38-41) — yellow
+        set_range(38, 42, led_min, led_max, CLR_YELLOW);
         // Toggle key (bottom-right, index 49) — white
         set_led(49, led_min, led_max, CLR_WHITE);
         break;
