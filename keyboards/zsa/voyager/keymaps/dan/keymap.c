@@ -92,10 +92,6 @@ tap_dance_action_t tap_dance_actions[] = {
     [TD_OH_LOW]       = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oh_low_finished,  td_oh_low_reset),
 };
 
-enum custom_keycodes {
-    EXIT_MOUSE = SAFE_RANGE,
-};
-
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT(
@@ -130,7 +126,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         NAVIGATOR_DEC_CPI, NAVIGATOR_INC_CPI, _______,     _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        MS_LEFT,        MS_DOWN,        MS_UP,          MS_RGHT,       _______,        _______,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        EXIT_MOUSE,
+        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
                                                         TOGGLE_SCROLL,  MS_BTN1,                                                        MS_BTN2,        MS_BTN3
     ),
 };
@@ -170,18 +166,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         return false;
 
-    case EXIT_MOUSE:
-        // Turn off the mouse layer and start the re-activation delay so
-        // the trackball can re-engage it on the next deliberate movement.
-        auto_mouse_reset_trigger(record->event.pressed);
-        return false;
     }
     return true;
 }
 
-// Keep the mouse layer active as long as it is on — only EXIT_MOUSE turns it
-// off. Without this, the layer would time out after AUTO_MOUSE_TIME ms of
-// inactivity.
+// Keep the mouse layer active as long as it is on — only the layer toggle key
+// turns it off. Without this, the layer would time out after AUTO_MOUSE_TIME ms
+// of inactivity.
 bool auto_mouse_activation(report_mouse_t mouse_report) {
     if (layer_state_is(_UTIL)) return true;
     return abs(mouse_report.x) > AUTO_MOUSE_THRESHOLD ||
