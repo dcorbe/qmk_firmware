@@ -16,6 +16,9 @@ enum layers {
 
 enum td_keycodes {
     TD_LAYER_TOGGLE,
+    TD_OH_HIGH,  // tap: Ctrl+3 (overheat high rack), hold: MO(_NAV)
+    TD_OH_MID,   // tap: Ctrl+2 (overheat mid rack),  hold: GUI
+    TD_OH_LOW,   // tap: Ctrl+1 (overheat low rack),  hold: CTRL
 };
 
 // Single tap: toggle mouse layer (_UTIL), double tap: toggle EVE layer (_EVE)
@@ -34,8 +37,59 @@ static void td_layer_toggle_finished(tap_dance_state_t *state, void *user_data) 
     }
 }
 
+// Overheat high rack: tap = Ctrl+3, hold = MO(_NAV)
+static void td_oh_high_finished(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        if (state->pressed) {
+            layer_on(_NAV);
+        } else {
+            tap_code16(LCTL(KC_3));
+        }
+    }
+}
+static void td_oh_high_reset(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1 && state->pressed) {
+        layer_off(_NAV);
+    }
+}
+
+// Overheat mid rack: tap = Ctrl+2, hold = GUI
+static void td_oh_mid_finished(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        if (state->pressed) {
+            register_code(KC_LEFT_GUI);
+        } else {
+            tap_code16(LCTL(KC_2));
+        }
+    }
+}
+static void td_oh_mid_reset(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1 && state->pressed) {
+        unregister_code(KC_LEFT_GUI);
+    }
+}
+
+// Overheat low rack: tap = Ctrl+1, hold = CTRL
+static void td_oh_low_finished(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1) {
+        if (state->pressed) {
+            register_code(KC_LEFT_CTRL);
+        } else {
+            tap_code16(LCTL(KC_1));
+        }
+    }
+}
+static void td_oh_low_reset(tap_dance_state_t *state, void *user_data) {
+    if (state->count == 1 && state->pressed) {
+        unregister_code(KC_LEFT_CTRL);
+    }
+}
+
 tap_dance_action_t tap_dance_actions[] = {
     [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_layer_toggle_finished, NULL),
+    [TD_OH_HIGH]      = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oh_high_finished, td_oh_high_reset),
+    [TD_OH_MID]       = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oh_mid_finished,  td_oh_mid_reset),
+    [TD_OH_LOW]       = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oh_low_finished,  td_oh_low_reset),
 };
 
 enum custom_keycodes {
@@ -62,11 +116,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     // EVE Online module layer
     // QWERT = high slots 1-5 (F1-F5), ASDFG = mid slots 1-5 (Alt+F1-F5), ZXCVB = low slots 1-5 (Cmd+F1-F5)
+    // Number row: dock/jump (D), set full speed (C-M-spc), approach (Q), keep at range (E), align to (A), warp to (S)
     [_EVE] = LAYOUT(
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
-        LCTL(KC_3),     KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          _______,        _______,        _______,        _______,        _______,        _______,
-        LCTL(KC_2),     LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    LCTL(KC_LEFT),  LCTL(KC_DOWN),  LCTL(KC_UP),    LCTL(KC_RGHT),  _______,        _______,
-        LCTL(KC_1),     LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
+        KC_D,           LCTL(LALT(KC_SPC)), KC_Q,       KC_E,           KC_A,           KC_S,                                           _______,        _______,        _______,        _______,        _______,        _______,
+        TD(TD_OH_HIGH), KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          _______,        _______,        _______,        _______,        _______,        _______,
+        TD(TD_OH_MID),  LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    LCTL(KC_LEFT),  LCTL(KC_DOWN),  LCTL(KC_UP),    LCTL(KC_RGHT),  _______,        _______,
+        TD(TD_OH_LOW),  LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
                                                         _______,        _______,                                                        _______,        _______
     ),
 
@@ -224,6 +279,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
     case _EVE:
         set_all(led_min, led_max, CLR_OFF);
+        // Navigation row (0-5): dock, speed, warp, align, approach, range — cyan
+        set_range(0, 6, led_min, led_max, CLR_CYAN);
         // Overheat rack keys (6, 12, 18) — match rack colors
         set_led(6,  led_min, led_max, CLR_RED);
         set_led(12, led_min, led_max, CLR_BLUE);
@@ -236,6 +293,11 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_range(19, 24, led_min, led_max, CLR_ORANGE);
         // Workspace switch: HJKL (38-41) — yellow
         set_range(38, 42, led_min, led_max, CLR_YELLOW);
+        // Thumb mouse buttons fall through from UTIL (24, 25, 50, 51) — green
+        set_led(24, led_min, led_max, CLR_GREEN);
+        set_led(25, led_min, led_max, CLR_GREEN);
+        set_led(50, led_min, led_max, CLR_GREEN);
+        set_led(51, led_min, led_max, CLR_GREEN);
         // Toggle key (bottom-right, index 49) — white
         set_led(49, led_min, led_max, CLR_WHITE);
         break;
