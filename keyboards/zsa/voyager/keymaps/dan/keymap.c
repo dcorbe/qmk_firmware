@@ -3,6 +3,7 @@
 
 #include QMK_KEYBOARD_H
 #include "navigator.h"
+#include "os_detection.h"
 
 // Tap: KC_EQUAL, Hold: KC_ESCAPE (uses LT for tap/hold detection)
 #define DUAL_FUNC_0 LT(5, KC_5)
@@ -12,6 +13,14 @@ enum layers {
     _NAV,
     _UTIL,
     _EVE,
+};
+
+// Workspace switching — macOS: Ctrl+Arrow, Linux: GUI+HJKL
+enum custom_keycodes {
+    WS_LEFT = SAFE_RANGE,
+    WS_DOWN,
+    WS_UP,
+    WS_RIGHT,
 };
 
 enum td_keycodes {
@@ -116,7 +125,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_EVE] = LAYOUT(
         KC_D,           KC_F16,         KC_Q,           KC_E,           KC_A,           KC_S,                                           _______,        _______,        _______,        _______,        _______,        _______,
         TD(TD_OH_HIGH), KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F13,         LCTL(KC_F),     LCTL(KC_I),     LCTL(KC_L),     KC_LBRC,        KC_RBRC,
-        TD(TD_OH_MID),  LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    LCTL(KC_LEFT),  LCTL(KC_DOWN),  LCTL(KC_UP),    LCTL(KC_RGHT),  _______,        _______,
+        TD(TD_OH_MID),  LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    WS_LEFT,        WS_DOWN,        WS_UP,          WS_RIGHT,       _______,        _______,
         TD(TD_OH_LOW),  LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    LCTL(LALT(KC_SPC)), KC_M,      LSFT(KC_M),     _______,        _______,        TD(TD_LAYER_TOGGLE),
                                                         _______,        _______,                                                        _______,        _______
     ),
@@ -133,6 +142,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+    case WS_LEFT:
+    case WS_DOWN:
+    case WS_UP:
+    case WS_RIGHT: {
+        if (!record->event.pressed) return false;
+        bool is_macos = detected_host_os() != OS_LINUX;
+        uint16_t key = (keycode == WS_LEFT)  ? (is_macos ? LCTL(KC_LEFT)  : LGUI(KC_H)) :
+                       (keycode == WS_DOWN)  ? (is_macos ? LCTL(KC_DOWN)  : LGUI(KC_J)) :
+                       (keycode == WS_UP)    ? (is_macos ? LCTL(KC_UP)    : LGUI(KC_K)) :
+                                               (is_macos ? LCTL(KC_RIGHT) : LGUI(KC_L));
+        tap_code16(key);
+        return false;
+    }
     case QK_MODS ... QK_MODS_MAX:
         // Mouse and consumer keys with modifiers work inconsistently across OSes.
         // Ensure modifiers are always applied to the key that was pressed.
@@ -294,8 +316,11 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         // Map keys: M/comma (45-46) system/galaxy map — green
         set_led(45, led_min, led_max, CLR_GREEN);
         set_led(46, led_min, led_max, CLR_GREEN);
-        // Workspace switch: HJKL (38-41) — yellow
-        set_range(38, 42, led_min, led_max, CLR_YELLOW);
+        // Workspace switch: HJKL (38-41) — rainbow pulse
+        set_led_rainbow(38, led_min, led_max, 0);
+        set_led_rainbow(39, led_min, led_max, 1);
+        set_led_rainbow(40, led_min, led_max, 2);
+        set_led_rainbow(41, led_min, led_max, 3);
         // Thumb mouse buttons fall through from UTIL (24, 25, 50, 51) — green
         set_led(24, led_min, led_max, CLR_GREEN);
         set_led(25, led_min, led_max, CLR_GREEN);
