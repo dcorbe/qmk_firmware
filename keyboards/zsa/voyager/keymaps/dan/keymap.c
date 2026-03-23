@@ -112,12 +112,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     // EVE Online module layer
     // QWERT = high slots 1-5 (F1-F5), ASDFG = mid slots 1-5 (Alt+F1-F5), ZXCVB = low slots 1-5 (Cmd+F1-F5)
-    // Number row: dock/jump (D), set full speed (C-M-spc), approach (Q), keep at range (E), align to (A), warp to (S)
+    // Number row: dock/jump (D), lock target (F16), approach (Q), keep at range (E), align to (A), warp to (S)
     [_EVE] = LAYOUT(
-        KC_D,           LCTL(LALT(KC_SPC)), KC_Q,       KC_E,           KC_A,           KC_S,                                           _______,        _______,        _______,        _______,        _______,        _______,
-        TD(TD_OH_HIGH), KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          _______,        _______,        _______,        _______,        _______,        _______,
+        KC_D,           KC_F16,         KC_Q,           KC_E,           KC_A,           KC_S,                                           _______,        _______,        _______,        _______,        _______,        _______,
+        TD(TD_OH_HIGH), KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F13,         LCTL(KC_F),     LCTL(KC_I),     LCTL(KC_L),     KC_LBRC,        KC_RBRC,
         TD(TD_OH_MID),  LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    LCTL(KC_LEFT),  LCTL(KC_DOWN),  LCTL(KC_UP),    LCTL(KC_RGHT),  _______,        _______,
-        TD(TD_OH_LOW),  LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
+        TD(TD_OH_LOW),  LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    LCTL(LALT(KC_SPC)), KC_M,      LSFT(KC_M),     _______,        _______,        TD(TD_LAYER_TOGGLE),
                                                         _______,        _______,                                                        _______,        _______
     ),
 
@@ -270,8 +270,12 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
     case _EVE:
         set_all(led_min, led_max, CLR_OFF);
-        // Navigation row (0-5): dock, speed, warp, align, approach, range — cyan
+        // Navigation row (0-5): dock, lock target, approach, keep at range, align to, warp to — cyan
         set_range(0, 6, led_min, led_max, CLR_CYAN);
+        // Lock target (index 1) — red to distinguish from nav keys
+        set_led(1, led_min, led_max, CLR_RED);
+        // Set full speed (N position, index 44) — cyan
+        set_led(44, led_min, led_max, CLR_CYAN);
         // Overheat rack keys (6, 12, 18) — match rack colors
         set_led(6,  led_min, led_max, CLR_RED);
         set_led(12, led_min, led_max, CLR_BLUE);
@@ -282,6 +286,14 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_range(13, 18, led_min, led_max, CLR_BLUE);
         // Low slots: ZXCVB (left row 3, indices 19-23) — orange
         set_range(19, 24, led_min, led_max, CLR_ORANGE);
+        // PTT key: Y position (32) — pink
+        set_led(32, led_min, led_max, CLR_PINK);
+        // Window shortcuts: U/I/O (33-35) fleet/inventory/local — green
+        // Scan tools: P/\ (36-37) dscan/probe — green
+        set_range(33, 38, led_min, led_max, CLR_GREEN);
+        // Map keys: M/comma (45-46) system/galaxy map — green
+        set_led(45, led_min, led_max, CLR_GREEN);
+        set_led(46, led_min, led_max, CLR_GREEN);
         // Workspace switch: HJKL (38-41) — yellow
         set_range(38, 42, led_min, led_max, CLR_YELLOW);
         // Thumb mouse buttons fall through from UTIL (24, 25, 50, 51) — green
