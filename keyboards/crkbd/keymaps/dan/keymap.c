@@ -10,6 +10,9 @@ enum layers {
     _FUNC,
 };
 
+// Tap: KC_1, Hold: KC_ESC
+#define TD_1_ESC LT(0, KC_1)
+
 // Bottom row corner mod-taps
 #define CT_Z    LCTL_T(KC_Z)
 #define GUI_SL  RGUI_T(KC_SLSH)
@@ -37,7 +40,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     // Nav: numbers, arrows, navigation
     //
     // ┌─────┬─────┬─────┬─────┬─────┐   ┌─────┬─────┬─────┬─────┬─────┐
-    // │  1  │  2  │  3  │  4  │  5  │   │  6  │  7  │  8  │  9  │  0  │
+    // │ 1/⎋ │  2  │  3  │  4  │  5  │   │  6  │  7  │  8  │  9  │  0  │
     // ├─────┼─────┼─────┼─────┼─────┤   ├─────┼─────┼─────┼─────┼─────┤
     // │     │     │     │     │     │   │  ←  │  ↓  │  ↑  │  →  │  '  │
     // ├─────┼─────┼─────┼─────┼─────┤   ├─────┼─────┼─────┼─────┼─────┤
@@ -46,10 +49,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     //                │ [*] │     │     │   │     │     │FUNC │
     //                └─────┴─────┴─────┘   └─────┴─────┴─────┘
     [_NAV] = LAYOUT_split_3x5_3(
-        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,         KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_QUOT,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     KC_HOME, KC_PGDN, KC_PGUP, KC_END,  XXXXXXX,
-                          _______, _______, _______,      _______, _______, MO(_FUNC)
+        TD_1_ESC, KC_2,    KC_3,    KC_4,    KC_5,         KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
+        XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_QUOT,
+        XXXXXXX,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,     KC_HOME, KC_PGDN, KC_PGUP, KC_END,  XXXXXXX,
+                            _______, _______, _______,      _______, _______, MO(_FUNC)
     ),
 
     // Sym: symbols and punctuation
@@ -88,3 +91,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                           _______, _______, _______,      _______, _______, _______
     ),
 };
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+    case TD_1_ESC:
+        if (record->tap.count > 0) {
+            if (record->event.pressed) {
+                register_code16(KC_1);
+            } else {
+                unregister_code16(KC_1);
+            }
+        } else {
+            if (record->event.pressed) {
+                register_code16(KC_ESC);
+            } else {
+                unregister_code16(KC_ESC);
+            }
+        }
+        return false;
+    }
+    return true;
+}
