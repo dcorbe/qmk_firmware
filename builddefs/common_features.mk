@@ -249,7 +249,6 @@ ifneq ($(strip $(EEPROM_DRIVER)),none)
       else ifeq ($(PLATFORM),ARM_ATSAM)
         # SAMD51 SmartEEPROM - custom platform implementation
         OPT_DEFS += -DEEPROM_SAMD
-        COMMON_VPATH += $(PLATFORM_PATH)/$(PLATFORM_KEY)
         SRC += eeprom_samd.c
       else ifeq ($(PLATFORM),TEST)
         # Test harness "EEPROM"

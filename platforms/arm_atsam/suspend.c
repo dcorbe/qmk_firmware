@@ -1,7 +1,10 @@
 #include "matrix.h"
-#include "i2c_master.h"
 #include "md_rgb_matrix.h"
 #include "suspend.h"
+
+// Declared in tmk_core/protocol/arm_atsam/i2c_master.h; forward-declared here to
+// avoid pulling in drivers/i2c_master.h which shadows the arm_atsam-specific header.
+void I2C3733_Control_Set(uint8_t state);
 
 /** \brief Suspend power down
  *
