@@ -26,7 +26,7 @@ enum custom_keycodes {
 enum td_keycodes {
     TD_LAYER_TOGGLE,
     TD_OH_HIGH,  // tap: Ctrl+3 (overheat high rack), hold: MO(_NAV)
-    TD_OH_MID,   // tap: Ctrl+2 (overheat mid rack),  hold: GUI
+    TD_OH_MID,   // tap: Ctrl+2 (overheat mid rack),  hold: Shift
     TD_OH_LOW,   // tap: Ctrl+1 (overheat low rack),  hold: CTRL
 };
 
@@ -57,24 +57,26 @@ static void td_oh_high_finished(tap_dance_state_t *state, void *user_data) {
     }
 }
 static void td_oh_high_reset(tap_dance_state_t *state, void *user_data) {
-    if (state->count == 1 && state->pressed) {
+    if (state->count == 1) {
         layer_off(_NAV);
     }
 }
 
-// Overheat mid rack: tap = Ctrl+2, hold = GUI
+// Overheat mid rack: tap = Ctrl+2, hold = Shift
 static void td_oh_mid_finished(tap_dance_state_t *state, void *user_data) {
     if (state->count == 1) {
         if (state->pressed) {
-            register_code(KC_LEFT_GUI);
+            register_code(KC_LEFT_SHIFT);
         } else {
             tap_code16(LCTL(KC_2));
         }
     }
 }
 static void td_oh_mid_reset(tap_dance_state_t *state, void *user_data) {
-    if (state->count == 1 && state->pressed) {
-        unregister_code(KC_LEFT_GUI);
+    if (state->count == 1) {
+        unregister_code(KC_LEFT_SHIFT);
+        clear_mods();
+        send_keyboard_report();
     }
 }
 
@@ -89,8 +91,10 @@ static void td_oh_low_finished(tap_dance_state_t *state, void *user_data) {
     }
 }
 static void td_oh_low_reset(tap_dance_state_t *state, void *user_data) {
-    if (state->count == 1 && state->pressed) {
+    if (state->count == 1) {
         unregister_code(KC_LEFT_CTRL);
+        clear_mods();
+        send_keyboard_report();
     }
 }
 
@@ -153,6 +157,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                        (keycode == WS_UP)    ? (is_macos ? LCTL(KC_UP)    : LGUI(KC_K)) :
                                                (is_macos ? LCTL(KC_RIGHT) : LGUI(KC_L));
         tap_code16(key);
+        clear_mods();
+        send_keyboard_report();
         return false;
     }
     case QK_MODS ... QK_MODS_MAX:
