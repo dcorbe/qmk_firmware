@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include QMK_KEYBOARD_H
-#include "navigator.h"
 #include "os_detection.h"
 
 // Tap: KC_EQUAL, Hold: KC_ESCAPE (uses LT for tap/hold detection)
@@ -11,7 +10,6 @@
 enum layers {
     _BASE,
     _NAV,
-    _UTIL,
     _EVE,
 };
 
@@ -24,27 +22,10 @@ enum custom_keycodes {
 };
 
 enum td_keycodes {
-    TD_LAYER_TOGGLE,
     TD_OH_HIGH,  // tap: Ctrl+3 (overheat high rack), hold: MO(_NAV)
     TD_OH_MID,   // tap: Ctrl+2 (overheat mid rack),  hold: Shift
     TD_OH_LOW,   // tap: Ctrl+1 (overheat low rack),  hold: CTRL
 };
-
-// Single tap: toggle mouse layer (_UTIL), double tap: toggle EVE layer (_EVE)
-// When exiting mouse mode, auto_mouse_reset_trigger() must be used instead of
-// layer_invert() so the trackball cooldown fires and the layer doesn't
-// immediately re-engage. layer_state_set_user() clears scroll state on deactivation.
-static void td_layer_toggle_finished(tap_dance_state_t *state, void *user_data) {
-    if (state->count == 1) {
-        if (layer_state_is(_UTIL)) {
-            auto_mouse_reset_trigger(true);
-        } else {
-            layer_on(_UTIL);
-        }
-    } else if (state->count == 2) {
-        layer_invert(_EVE);
-    }
-}
 
 // Overheat high rack: tap = Ctrl+3, hold = MO(_NAV)
 static void td_oh_high_finished(tap_dance_state_t *state, void *user_data) {
@@ -99,7 +80,6 @@ static void td_oh_low_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_LAYER_TOGGLE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_layer_toggle_finished, NULL),
     [TD_OH_HIGH]      = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oh_high_finished, td_oh_high_reset),
     [TD_OH_MID]       = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oh_mid_finished,  td_oh_mid_reset),
     [TD_OH_LOW]       = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_oh_low_finished,  td_oh_low_reset),
@@ -111,7 +91,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         DUAL_FUNC_0,    KC_1,           KC_2,           KC_3,           KC_4,           KC_5,                                           KC_6,           KC_7,           KC_8,           KC_9,           KC_0,           KC_MINUS,
         MO(_NAV),       KC_Q,           KC_W,           KC_E,           KC_R,           KC_T,                                           KC_Y,           KC_U,           KC_I,           KC_O,           KC_P,           KC_BSLS,
         KC_LEFT_GUI,    KC_A,           KC_S,           KC_D,           KC_F,           KC_G,                                           KC_H,           KC_J,           KC_K,           KC_L,           KC_SCLN,        KC_QUOTE,
-        KC_LEFT_CTRL,   KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,                                           KC_N,           KC_M,           KC_COMMA,       KC_DOT,         KC_SLASH,       TD(TD_LAYER_TOGGLE),
+        KC_LEFT_CTRL,   KC_Z,           KC_X,           KC_C,           KC_V,           KC_B,                                           KC_N,           KC_M,           KC_COMMA,       KC_DOT,         KC_SLASH,       TG(_EVE),
                                                         MT(MOD_LALT, KC_BSPC), KC_LSFT,                                        MT(MOD_RSFT, KC_ENTER), MT(MOD_RALT, KC_SPACE)
     ),
 
@@ -130,17 +110,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_D,           KC_F16,         KC_Q,           KC_E,           KC_A,           KC_S,                                           _______,        _______,        _______,        _______,        _______,        _______,
         TD(TD_OH_HIGH), KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F13,         LCTL(KC_F),     LCTL(KC_I),     LCTL(KC_L),     KC_LBRC,        KC_RBRC,
         TD(TD_OH_MID),  LALT(KC_F1),    LALT(KC_F2),    LALT(KC_F3),    LALT(KC_F4),    LALT(KC_F5),                                    WS_LEFT,        WS_DOWN,        WS_UP,          WS_RIGHT,       _______,        _______,
-        TD(TD_OH_LOW),  LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    LCTL(LALT(KC_SPC)), KC_M,      LSFT(KC_M),     _______,        _______,        TD(TD_LAYER_TOGGLE),
+        TD(TD_OH_LOW),  LGUI(KC_F1),    LGUI(KC_F2),    LGUI(KC_F3),    LGUI(KC_F4),    LGUI(KC_F5),                                    LCTL(LALT(KC_SPC)), KC_M,      LSFT(KC_M),     _______,        _______,        TG(_EVE),
                                                         _______,        _______,                                                        _______,        _______
-    ),
-
-    // Navigator automouse layer — activates automatically when trackball moves
-    [_UTIL] = LAYOUT(
-        NAVIGATOR_DEC_CPI, NAVIGATOR_INC_CPI, _______,     _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        MS_LEFT,        MS_DOWN,        MS_UP,          MS_RGHT,       _______,        _______,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        TD(TD_LAYER_TOGGLE),
-                                                        TOGGLE_SCROLL,  MS_BTN1,                                                        MS_BTN2,        MS_BTN3
     ),
 };
 
@@ -161,23 +132,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         send_keyboard_report();
         return false;
     }
-    case QK_MODS ... QK_MODS_MAX:
-        // Mouse and consumer keys with modifiers work inconsistently across OSes.
-        // Ensure modifiers are always applied to the key that was pressed.
-        if (IS_MOUSE_KEYCODE(QK_MODS_GET_BASIC_KEYCODE(keycode))) {
-            if (record->event.pressed) {
-                add_mods(QK_MODS_GET_MODS(keycode));
-                send_keyboard_report();
-                wait_ms(2);
-                register_code(QK_MODS_GET_BASIC_KEYCODE(keycode));
-                return false;
-            } else {
-                wait_ms(2);
-                del_mods(QK_MODS_GET_MODS(keycode));
-            }
-        }
-        break;
-
     case DUAL_FUNC_0:
         if (record->tap.count > 0) {
             if (record->event.pressed) {
@@ -198,16 +152,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
 }
 
-// Keep the mouse layer active as long as it is on — only the layer toggle key
-// turns it off. Without this, the layer would time out after AUTO_MOUSE_TIME ms
-// of inactivity.
-bool auto_mouse_activation(report_mouse_t mouse_report) {
-    if (layer_state_is(_UTIL)) return true;
-    return abs(mouse_report.x) > AUTO_MOUSE_THRESHOLD ||
-           abs(mouse_report.y) > AUTO_MOUSE_THRESHOLD ||
-           mouse_report.buttons;
-}
-
 // ---------------------------------------------------------------------------
 // RGB Matrix — per-layer lighting
 // ---------------------------------------------------------------------------
@@ -222,15 +166,12 @@ bool auto_mouse_activation(report_mouse_t mouse_report) {
 #define CLR_ORANGE      180, 80, 0
 #define CLR_ORANGE_DIM  60, 25, 0
 #define CLR_WHITE       200, 200, 200
-#define CLR_PURPLE      100, 0, 160
-#define CLR_PURPLE_DIM  30, 0, 50
 #define CLR_GREEN       0, 200, 0
 #define CLR_CYAN        0, 180, 180
 #define CLR_YELLOW      200, 180, 0
 #define CLR_PINK        255, 50, 130
 #define CLR_RED         200, 0, 0
 #define CLR_BLUE        0, 0, 200
-#define CLR_BLUE_PULSE  0, 0, 120
 #define CLR_OFF         0, 0, 0
 #define REACTIVE_FADE_MS 300
 
@@ -327,34 +268,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_led_rainbow(39, led_min, led_max, 1);
         set_led_rainbow(40, led_min, led_max, 2);
         set_led_rainbow(41, led_min, led_max, 3);
-        // Thumb mouse buttons fall through from UTIL (24, 25, 50, 51) — green
-        set_led(24, led_min, led_max, CLR_GREEN);
-        set_led(25, led_min, led_max, CLR_GREEN);
-        set_led(50, led_min, led_max, CLR_GREEN);
-        set_led(51, led_min, led_max, CLR_GREEN);
         // Toggle key (bottom-right, index 49) — white
-        set_led(49, led_min, led_max, CLR_WHITE);
-        break;
-
-    case _UTIL:
-        if (set_scrolling) {
-            // Scroll mode active — blue pulse
-            set_all(led_min, led_max, CLR_BLUE_PULSE);
-        } else {
-            set_all(led_min, led_max, CLR_PURPLE_DIM);
-        }
-        // CPI keys (0, 1) — yellow
-        set_led(0, led_min, led_max, CLR_YELLOW);
-        set_led(1, led_min, led_max, CLR_YELLOW);
-
-// Mouse buttons + scroll toggle on thumbs: (24) (25) (50) (51) — green
-        set_led(24, led_min, led_max, CLR_GREEN);
-        set_led(25, led_min, led_max, CLR_GREEN);
-        set_led(50, led_min, led_max, CLR_GREEN);
-        set_led(51, led_min, led_max, CLR_GREEN);
-        // Mouse movement: HJKL (38-41) — pink
-        set_range(38, 42, led_min, led_max, CLR_PINK);
-        // Layer toggle key (49) — white
         set_led(49, led_min, led_max, CLR_WHITE);
         break;
     }
@@ -379,26 +293,10 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 // Status LEDs — mode indicators
 // ---------------------------------------------------------------------------
 
-layer_state_t layer_state_set_user(layer_state_t state) {
-    // Clear scroll mode whenever the mouse layer deactivates, so the
-    // trackball x/y reports are non-zero and auto-mouse can re-engage.
-    if (!layer_state_cmp(state, _UTIL)) {
-        set_scrolling = false;
-    }
-    // LED 4: mouse layer active
-    STATUS_LED_4(layer_state_cmp(state, _UTIL));
-    return state;
-}
-
 void housekeeping_task_user(void) {
     // These change outside of layer_state_set, so poll them
-    STATUS_LED_1(set_scrolling);
     STATUS_LED_2(is_caps_word_on());
     STATUS_LED_3(leader_sequence_active());
-}
-
-void pointing_device_init_user(void) {
-    set_auto_mouse_enable(true);
 }
 
 void leader_end_user(void) {

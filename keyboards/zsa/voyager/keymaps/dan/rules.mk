@@ -1,9 +1,4 @@
 LEADER_ENABLE = yes
 OS_DETECTION_ENABLE = yes
-MOUSEKEY_ENABLE = yes
 TAP_DANCE_ENABLE = yes
 LAYER_LOCK_ENABLE = yes
-POINTING_DEVICE_ENABLE = yes
-POINTING_DEVICE_DRIVER = custom
-SRC += keyboards/zsa/voyager/navigator_trackball.c
-SRC += keyboards/zsa/voyager/navigator.c
