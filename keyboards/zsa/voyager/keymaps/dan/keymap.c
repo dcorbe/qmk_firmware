@@ -117,10 +117,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [_NAV] = LAYOUT(
-        _______,        KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
+        KC_GRV,         KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        KC_LBRC,        KC_RBRC,        KC_LCBR,        KC_RCBR,        KC_F12,
         _______,        _______,        _______,        _______,        _______,        _______,                                        KC_LEFT,        KC_DOWN,        KC_UP,          KC_RIGHT,       _______,        _______,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        AM_LOCK,
+        _______,        _______,        _______,        _______,        _______,        _______,                                        KC_HOME,        KC_PGDN,        KC_PGUP,        KC_END,         _______,        AM_LOCK,
                                                         KC_DEL,         KC_TAB,                                                         _______,        _______
     ),
 
@@ -311,6 +311,10 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_range(38, 42, led_min, led_max, CLR_WHITE);
         // [ ] { } at U I O P positions (33-36) — cyan
         set_range(33, 37, led_min, led_max, CLR_CYAN);
+        // Grave/tilde at top-left (0) — cyan (symbol family)
+        set_led(0, led_min, led_max, CLR_CYAN);
+        // Nav cluster Home/PgDn/PgUp/End under arrows (44-47) — yellow
+        set_range(44, 48, led_min, led_max, CLR_YELLOW);
         // Delete on left-outer thumb (24) — red (destructive)
         set_led(24, led_min, led_max, CLR_RED);
         // Auto-mouse lockout toggle (bottom-right, 49) — green when unlocked
