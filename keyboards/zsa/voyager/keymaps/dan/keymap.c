@@ -21,6 +21,7 @@ enum custom_keycodes {
     WS_DOWN,
     WS_UP,
     WS_RIGHT,
+    AM_LOCK,  // toggle auto-mouse lockout (prevents trackball bumps from activating the mouse layer)
 };
 
 enum td_keycodes {
@@ -119,7 +120,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______,        KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        KC_LBRC,        KC_RBRC,        KC_LCBR,        KC_RCBR,        KC_F12,
         _______,        _______,        _______,        _______,        _______,        _______,                                        KC_LEFT,        KC_DOWN,        KC_UP,          KC_RIGHT,       _______,        _______,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
+        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        AM_LOCK,
                                                         KC_DEL,         KC_TAB,                                                         _______,        _______
     ),
 
@@ -161,6 +162,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         send_keyboard_report();
         return false;
     }
+    case AM_LOCK:
+        // Toggle the auto-mouse lockout. While locked, trackball bumps no longer
+        // activate the mouse layer (_UTIL) — useful during games. If the mouse
+        // layer is already active when we lock, drop out of it immediately.
+        if (record->event.pressed) {
+            bool enabled = !get_auto_mouse_enable();
+            set_auto_mouse_enable(enabled);
+            if (!enabled) {
+                layer_off(_UTIL);
+            }
+        }
+        return false;
+
     case QK_MODS ... QK_MODS_MAX:
         // Mouse and consumer keys with modifiers work inconsistently across OSes.
         // Ensure modifiers are always applied to the key that was pressed.
@@ -299,6 +313,9 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_range(33, 37, led_min, led_max, CLR_CYAN);
         // Delete on left-outer thumb (24) — red (destructive)
         set_led(24, led_min, led_max, CLR_RED);
+        // Auto-mouse lockout toggle (bottom-right, 49) — green when unlocked
+        // (the global override below paints it red when locked)
+        set_led(49, led_min, led_max, CLR_GREEN);
         break;
 
     case _EVE:
@@ -361,6 +378,12 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         // Layer toggle key (49) — white
         set_led(49, led_min, led_max, CLR_WHITE);
         break;
+    }
+
+    // Auto-mouse lockout indicator: bottom-right key (49) red on every layer
+    // while the trackball is locked out, so the state is visible mid-game.
+    if (!get_auto_mouse_enable()) {
+        set_led(49, led_min, led_max, CLR_RED);
     }
 
     // Reactive flash: white flash on recently pressed keys, fading out
