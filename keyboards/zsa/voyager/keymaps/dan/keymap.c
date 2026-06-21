@@ -117,10 +117,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT(
         _______,        KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        KC_LBRC,        KC_RBRC,        KC_LCBR,        KC_RCBR,        _______,
+        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        KC_LBRC,        KC_RBRC,        KC_LCBR,        KC_RCBR,        KC_F12,
         _______,        _______,        _______,        _______,        _______,        _______,                                        KC_LEFT,        KC_DOWN,        KC_UP,          KC_RIGHT,       _______,        _______,
         _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        _______,        _______,        _______,        _______,        _______,
-                                                        _______,        KC_TAB,                                                         _______,        _______
+                                                        KC_DEL,         KC_TAB,                                                         _______,        _______
     ),
 
     // Navigator automouse layer — activates automatically when trackball moves
@@ -289,13 +289,16 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
     case _NAV:
         set_all(led_min, led_max, CLR_ORANGE_DIM);
-        // F-keys: left F1-F5 (1-5), right F6-F11 (26-31)
-        set_range(1, 6, led_min, led_max, CLR_YELLOW);
-        set_range(26, 32, led_min, led_max, CLR_YELLOW);
+        // F-keys: left F1-F5 (1-5), right F6-F11 (26-31), F12 (37) — bright purple
+        set_range(1, 6, led_min, led_max, CLR_PURPLE);
+        set_range(26, 32, led_min, led_max, CLR_PURPLE);
+        set_led(37, led_min, led_max, CLR_PURPLE);
         // Arrow keys: H J K L positions (38-41) — bright white
         set_range(38, 42, led_min, led_max, CLR_WHITE);
         // [ ] { } at U I O P positions (33-36) — cyan
         set_range(33, 37, led_min, led_max, CLR_CYAN);
+        // Delete on left-outer thumb (24) — red (destructive)
+        set_led(24, led_min, led_max, CLR_RED);
         break;
 
     case _EVE:
