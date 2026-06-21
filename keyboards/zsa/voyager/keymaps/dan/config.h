@@ -6,6 +6,10 @@
 #define LEADER_TIMEOUT 400
 #define LEADER_PER_KEY_TIMING
 
+// Caps Word — activate by holding Left + Right Shift together.
+// (Not double-tap-shift, which is reserved for games.)
+#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
+
 // From Oryx config
 #define ONESHOT_TAP_TOGGLE 2
 #undef ONESHOT_TIMEOUT
