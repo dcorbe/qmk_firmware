@@ -118,10 +118,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_NAV] = LAYOUT(
         KC_GRV,         KC_F1,          KC_F2,          KC_F3,          KC_F4,          KC_F5,                                          KC_F6,          KC_F7,          KC_F8,          KC_F9,          KC_F10,         KC_F11,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        _______,        KC_LBRC,        KC_RBRC,        KC_LCBR,        KC_RCBR,        KC_F12,
+        _______,        _______,        _______,        _______,        KC_PSCR,        KC_SCRL,                                        _______,        KC_LBRC,        KC_RBRC,        KC_LCBR,        KC_RCBR,        KC_F12,
         _______,        _______,        _______,        _______,        _______,        _______,                                        KC_LEFT,        KC_DOWN,        KC_UP,          KC_RIGHT,       _______,        _______,
-        _______,        _______,        _______,        _______,        _______,        _______,                                        KC_HOME,        KC_PGDN,        KC_PGUP,        KC_END,         _______,        AM_LOCK,
-                                                        KC_DEL,         KC_TAB,                                                         _______,        _______
+        _______,        _______,        _______,        _______,        _______,        _______,                                        KC_HOME,        KC_PGDN,        KC_PGUP,        KC_END,         KC_INS,         AM_LOCK,
+                                                        KC_DEL,         KC_TAB,                                                         _______,        KC_APP
     ),
 
     // Navigator automouse layer — activates automatically when trackball moves
@@ -313,10 +313,14 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_range(33, 37, led_min, led_max, CLR_CYAN);
         // Grave/tilde at top-left (0) — cyan (symbol family)
         set_led(0, led_min, led_max, CLR_CYAN);
-        // Nav cluster Home/PgDn/PgUp/End under arrows (44-47) — yellow
-        set_range(44, 48, led_min, led_max, CLR_YELLOW);
+        // Nav cluster Home/PgDn/PgUp/End + Insert under arrows (44-48) — yellow
+        set_range(44, 49, led_min, led_max, CLR_YELLOW);
+        // Print Screen / Scroll Lock on left index R/T (10-11) — pink (system pair)
+        set_range(10, 12, led_min, led_max, CLR_PINK);
         // Delete on left-outer thumb (24) — red (destructive)
         set_led(24, led_min, led_max, CLR_RED);
+        // Menu/App on right-outer thumb (51) — blue
+        set_led(51, led_min, led_max, CLR_BLUE);
         // Auto-mouse lockout toggle (bottom-right, 49) — green when unlocked
         // (the global override below paints it red when locked)
         set_led(49, led_min, led_max, CLR_GREEN);
